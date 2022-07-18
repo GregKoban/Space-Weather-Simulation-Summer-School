@@ -3,17 +3,19 @@
 
 cosine approximation function
 """
-__author__ = 'Qusai Al Shidi'
-__email__ = 'qusai@umich.edu'
+__author__ = 'Gergely Koban'
+__email__ = 'koban.gergely@wigner.hu'
 
 from math import factorial
 from math import pi
 
 
 def cos_approx(x, accuracy=10):
-    """
-    """
-    return 
+    """This program returns an approximation of cosine using Taylor approximation with a given accuracy"""
+    elements = [(((-1)**n)*x**(2*n))/(factorial(2*n)) for n in range(accuracy+1)] #using Taylor approximation
+    #then I make a summary of the elements
+    
+    return sum(elements)
 
 
 
