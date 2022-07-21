@@ -36,7 +36,15 @@ data_arr = np.random.randn(10,5)
 print(data_arr)
 
 # Save the data_arr variable into a .npy file
+np.save('test_np_save.npy',data_arr)
 
+# Load data from a .npy file
+data_arr_loaded = np.load('test_np_save.npy')
+
+# Verification that the loaded data matches the initial data exactly
+print(np.equal(data_arr,data_arr_loaded))
+print('\n')
+print(data_arr == data_arr_loaded)
 
 #%%
 """
@@ -47,6 +55,23 @@ data_arr2 = np.random.randn(8,1)
 print(data_arr2)
 
 # Save the data_arr and data_arr2 variables into a .npz file
+np.savez('test_savez.npz', data_arr, data_arr2)
+
+# Load the numpy zip file
+npzfile = np.load('test_savez.npz')
+
+# Loaded file is not a numpy array, but is a Npzfile object. You are not able to print the values directly.
+print(npzfile)
+
+# To inspect the name of the variables within the npzfile
+print('Variable names within this file:', sorted(npzfile.files))
+
+# We will then be able to use the variable name as a key to access the data.
+print(npzfile['arr_0'])
+
+# Verification that the loaded data matches the initial data exactly
+print((data_arr==npzfile['arr_0']).all())
+print((data_arr2==npzfile['arr_1']).all())
 
 #%%
 """
@@ -64,7 +89,7 @@ Loading data from Matlab
 import numpy as np
 from scipy.io import loadmat
 
-dir_density_Jb2008 = 'Data/JB2008/2002_JB2008_density.mat'
+dir_density_Jb2008 = r'C:\Users\Asus\SWSS Boulder 2022\Data/JB2008/2002_JB2008_density.mat'
 
 # Load Density Data
 try:
@@ -102,6 +127,26 @@ time_array_JB2008 = np.linspace(0,8760,20, dtype = int)
 
 # For the dataset that we will be working with today, you will need to reshape them to be lst x lat x altitude
 JB2008_dens_reshaped = np.reshape(JB2008_dens,(nofLst_JB2008,nofLat_JB2008,nofAlt_JB2008,8760), order='F') # Fortra-like index order
+
+
+# Look for data that correspond to an altitude of 400 KM
+alt = 400
+hi = np.where(altitudes_JB2008==alt)
+
+# Create a canvas to plot our data on. Here we are using a subplot with 5 spaces for the plots.
+fig, axs = plt.subplots(5, figsize=(15, 10*2), sharex=True)
+
+for ik in range (5):
+    cs = axs[ik].contourf(localSolarTimes_JB2008, latitudes_JB2008, JB2008_dens_reshaped[:,:,hi,time_array_JB2008[ik]].squeeze().T)
+    axs[ik].set_title('JB2008 density at 400 km, t = {} hrs'.format(time_array_JB2008[ik]), fontsize=18)
+    axs[ik].set_ylabel("Latitudes", fontsize=18)
+    axs[ik].tick_params(axis = 'both', which = 'major', labelsize = 16)
+    
+    # Make a colorbar for the ContourSet returned by the contourf call.
+    cbar = fig.colorbar(cs,ax=axs[ik])
+    cbar.ax.set_ylabel('Density')
+
+axs[ik].set_xlabel("Local Solar Time", fontsize=18)   
 
 
 #%%
@@ -175,6 +220,7 @@ from scipy.io import savemat
 a = np.arange(20)
 mdic = {"a": a, "label": "experiment"} # Using dictionary to store multiple variables
 savemat("matlab_matrix.mat", mdic)
+
 
 #%%
 """
